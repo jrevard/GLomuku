@@ -1,0 +1,6 @@
+Debug/*
+GLomoku/Debug/*
+*.swp
+*.suo
+*.ncb
+*.user

@@ -1,0 +1,35 @@
+
+	--- HOW TO START USING OPENGL ---
+
+1.) Download Microsoft Visual Studio 2008+ 
+     - http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express
+
+2.) Download Freeglut and Glew dll, library and header files (.dll, .lib, .h)
+
+3.) Put files in these folders:
+.dll - C:\WINDOWS\System32 
+.lib - C:\Program Files\Microsoft Visual Studio 9.0\VC\lib
+.h   - C:\Program Files\Microsoft Visual Studio 9.0\VC\include
+
+4.) Make and empty Win32 console application, 
+
+5.) link some library files. 
+
+	- Go to your project properties, and under: 
+	  “Configuration Properties” -> “Linker” 
+	  click on “Input” and add two additional dependencies. 
+	
+	- Add 
+		glew32.lib  
+		glut32.lib 
+
+	  on separate lines.
+
+6.) put these headers at the top of your program in
+    whatever order you put them in the previous step
+
+#include <glew.h>
+#include <glut.h>
+
+
+
