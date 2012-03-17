@@ -45,9 +45,12 @@
 #include <glut.h>
 #include <math.h>
 #include <algorithm>
+#include <assert.h>
 #include "Player1.h"	// a player needs one .cpp and one .h file
 #include "PlayerDaybreak.h"
 #include "Board.h"
+
+using namespace std;
 
 bool oneMove = false; // toggle to view one move at a time 
 bool gameStart = false;	// start playing gomoku
@@ -211,8 +214,9 @@ void playGomoku()
 	while (!gameWon) {
 		// get move from player 1 & update gameBoard
 		playerOne(ROW, COL); // get move from player 1
-		
+		assert(gameBoard.GetPiece(ROW, COL) == PieceNone); // Make sure this is a valid move
 		gameBoard.SetPiece(ROW, COL, PiecePlayer1);
+		player2.OpponentDidMove(ROW, COL);
 		
 		drawGameMoves();
 		gameWon = gameBoard.IsSolved(ROW, COL, winner); // check for win
@@ -220,6 +224,7 @@ void playGomoku()
 		if (!gameWon) {
 			// get move from player 2 & update gameBoard
 			player2.GetMove(ROW, COL); // get move from player 2
+			assert(gameBoard.GetPiece(ROW, COL) == PieceNone); // Make sure this is a valid move
 			gameBoard.SetPiece(ROW, COL, PiecePlayer2);
 			drawGameMoves();
 			gameWon = gameBoard.IsSolved(ROW, COL, winner); // check for win

@@ -1,9 +1,12 @@
 #include "Board.h"
+#include <algorithm>
+
+using namespace std;
 
 Board::Board() {
 	pieceCount = 0;
-	for (int row=0; row < Size; row++)
-		for (int col=0; col < Size; col++)
+	for (int row=0; row < BoardSize; row++)
+		for (int col=0; col < BoardSize; col++)
 			pieces[row][col] = PieceNone;
 }
 
@@ -24,17 +27,10 @@ bool Board::IsSolved(int row, int col, Winner &whoWon) {
 	if (IsSolved(row, col, PiecePlayer2)) {
 		whoWon = WinnerPlayer2;
 	}
-	if (pieceCount == Size*Size) {
+	if (pieceCount == BoardSize*BoardSize) {
 		whoWon = WinnerDraw;
 	}
 	return whoWon != WinnerNone;
-}
-
-int max(int a, int b) {
-	return (a > b) ? a : b;
-}
-int min(int a, int b) {
-	return (a < b) ? a : b;
 }
 
 bool Board::IsSolved(int pRow, int pCol, Piece piece) {
@@ -42,7 +38,7 @@ bool Board::IsSolved(int pRow, int pCol, Piece piece) {
 
 	// Check horizontal
 	count = 0;
-	for (int i=0; i < Size; i++) {
+	for (int i=0; i < BoardSize; i++) {
 		if (pieces[pRow][i] == piece) count++;
 		else count = 0;
 		if (count == WinCount) return true;
@@ -50,7 +46,7 @@ bool Board::IsSolved(int pRow, int pCol, Piece piece) {
 
 	// Check vertical
 	count = 0;
-	for (int i=0; i < Size; i++) {
+	for (int i=0; i < BoardSize; i++) {
 		if (pieces[i][pCol] == piece) count++;
 		else count = 0;
 		if (count == WinCount) return true;
@@ -61,7 +57,7 @@ bool Board::IsSolved(int pRow, int pCol, Piece piece) {
 	count = 0;
 	col = max(pCol - pRow, 0);
 	row = pRow - (pCol - col);
-	while (row < Size && col < Size) {
+	while (row < BoardSize && col < BoardSize) {
 		if (pieces[row][col] == piece) count++;
 		else count = 0;
 		if (count == WinCount) return true;
@@ -71,9 +67,9 @@ bool Board::IsSolved(int pRow, int pCol, Piece piece) {
 
 	// Check Diagonal / -- Start at the top right
 	count = 0;
-	col = min(pCol + pRow, Size-1);
+	col = min(pCol + pRow, BoardSize-1);
 	row = pRow - (col - pCol);
-	while (row < Size && col >= 0) {
+	while (row < BoardSize && col >= 0) {
 		if (pieces[row][col] == piece) count++;
 		else count = 0;
 		if (count == WinCount) return true;

@@ -16,12 +16,12 @@ typedef enum {
 
 // Board class is used to check for winners
 
+static const int BoardSize = 19;
+static const int WinCount = 5;
+
 class Board
 {
 	public:
-	static const int Size = 19;
-	static const int WinCount = 5;
-
 	Board();
 	void SetPiece(int row, int col, Piece piece);
 	Piece GetPiece(int row, int col);
@@ -31,7 +31,7 @@ class Board
 	bool IsSolved(int row, int col, Winner &whoWon);
 
 	private:
-	Piece pieces[Size][Size];
+	Piece pieces[BoardSize][BoardSize];
 	bool IsSolved(int row, int col, Piece piece);
 	int pieceCount;
 };

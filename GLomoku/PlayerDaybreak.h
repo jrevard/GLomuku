@@ -2,6 +2,7 @@
 #define PLAYERDAYBREAK_H
 
 #include "Player.h"
+#include "Board.h"
 
 class PlayerDaybreak : Player
 {
@@ -12,6 +13,8 @@ class PlayerDaybreak : Player
 
 	private:
 	int _row;
+	Board board;
+	bool IsPlayerRow3(int &row, int &col);
 };
 
 #endif
