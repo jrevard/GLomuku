@@ -62,7 +62,11 @@ bool game = false;		// show 2D array of moves
 
 char moveColor = 'P';	// = purple, 'T' = tan
 Board gameBoard; // current game board
+Player1 player1; // ai for player 1
 PlayerDaybreak player2; // ai for player 2
+Player *currentPlayer = &player1; // Who's current turn
+Player *otherPlayer = &player2;
+Piece currentPlayerPiece = PiecePlayer1;
 
 int smileyFace[2][8] = { -4, -2, 0, 2, 4, -2, 2, 0,
 						  2,  0, 0, 0, 2,  6, 6, 0};
@@ -200,11 +204,15 @@ void drawGameMoves()
 //--------------------------------------------------------------
 
 
+void swapPlayers() {
+	Player *tmp = currentPlayer;
+	currentPlayer = otherPlayer;
+	otherPlayer = tmp;
+	currentPlayerPiece = (currentPlayerPiece == PiecePlayer1) ? PiecePlayer2 : PiecePlayer1;
+}
+
 void playGomoku()
 {
-	int ROW, COL;	// record player 1 moves and player 2 moves
-	ROW = COL = -5; // always positive after first game move
-
 	Winner winner;
 
 //--this bit of code is essential to view moves one at a time
@@ -213,22 +221,18 @@ void playGomoku()
 	
 	while (!gameWon) {
 		// get move from player 1 & update gameBoard
-		playerOne(ROW, COL); // get move from player 1
+		int ROW, COL;	// record player 1 moves and player 2 moves
+		currentPlayer->GetMove(ROW, COL);
+
 		assert(gameBoard.GetPiece(ROW, COL) == PieceNone); // Make sure this is a valid move
-		gameBoard.SetPiece(ROW, COL, PiecePlayer1);
-		player2.OpponentDidMove(ROW, COL);
+		gameBoard.SetPiece(ROW, COL, currentPlayerPiece);
+
+		otherPlayer->OpponentDidMove(ROW, COL);
 		
 		drawGameMoves();
 		gameWon = gameBoard.IsSolved(ROW, COL, winner); // check for win
-	
-		if (!gameWon) {
-			// get move from player 2 & update gameBoard
-			player2.GetMove(ROW, COL); // get move from player 2
-			assert(gameBoard.GetPiece(ROW, COL) == PieceNone); // Make sure this is a valid move
-			gameBoard.SetPiece(ROW, COL, PiecePlayer2);
-			drawGameMoves();
-			gameWon = gameBoard.IsSolved(ROW, COL, winner); // check for win
-		}
+
+		swapPlayers();
 
 		if (oneMove) break;
 	}

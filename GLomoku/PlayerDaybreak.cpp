@@ -86,7 +86,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 		}
 	}
 
-	// Check Diagonal / -- Start at the top left
+	// Check Diagonal / -- Start at the top right
 	for (int pRow = 0; pRow < BoardSize; pRow++) {
 		RunCheck check(&board);
 		int row = pRow;

@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "Board.h"
 
-class PlayerDaybreak : Player
+class PlayerDaybreak : public Player
 {
 	public:
 	PlayerDaybreak();
