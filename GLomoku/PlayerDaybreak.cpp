@@ -1,10 +1,13 @@
 #include "PlayerDaybreak.h"
 #include <algorithm>
+#include <time.h>
+#include <stdlib.h>
 
 using namespace std;
 
 PlayerDaybreak::PlayerDaybreak() {
 	_row = 10;
+	srand(time(NULL));
 }
 
 class RunCheck
@@ -111,7 +114,11 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 	return false;
 }
 
-void GetRandom(int &row, int &col) {
+void PlayerDaybreak::GetRandom(int &row, int &col) {
+	do {
+		row = rand() % BoardSize;
+		col = rand() & BoardSize;
+	} while (board.GetPiece(row, col) != PieceNone);
 }
 
 void PlayerDaybreak::OpponentDidMove(int row, int col) {
@@ -119,8 +126,7 @@ void PlayerDaybreak::OpponentDidMove(int row, int col) {
 }
 void PlayerDaybreak::GetMove(int &row, int &col) {
 	if (!IsPlayerRow3(row, col)) {
-		row = _row++;
-		col = 0;
+		GetRandom(row, col);
 	}
 	board.SetPiece(row, col, PiecePlayer1);
 }

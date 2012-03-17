@@ -66,7 +66,6 @@ Player1 player1; // ai for player 1
 PlayerDaybreak player2; // ai for player 2
 Player *currentPlayer = &player1; // Who's current turn
 Player *otherPlayer = &player2;
-Piece currentPlayerPiece = PiecePlayer1;
 
 int smileyFace[2][8] = { -4, -2, 0, 2, 4, -2, 2, 0,
 						  2,  0, 0, 0, 2,  6, 6, 0};
@@ -208,16 +207,15 @@ void swapPlayers() {
 	Player *tmp = currentPlayer;
 	currentPlayer = otherPlayer;
 	otherPlayer = tmp;
-	currentPlayerPiece = (currentPlayerPiece == PiecePlayer1) ? PiecePlayer2 : PiecePlayer1;
+}
+
+Piece pieceForPlayer(Player *player) {
+	return (player == &player1) ? PiecePlayer1 : PiecePlayer2;
 }
 
 void playGomoku()
 {
 	Winner winner;
-
-//--this bit of code is essential to view moves one at a time
-	drawGameMoves();
-//--
 	
 	while (!gameWon) {
 		// get move from player 1 & update gameBoard
@@ -225,7 +223,7 @@ void playGomoku()
 		currentPlayer->GetMove(ROW, COL);
 
 		assert(gameBoard.GetPiece(ROW, COL) == PieceNone); // Make sure this is a valid move
-		gameBoard.SetPiece(ROW, COL, currentPlayerPiece);
+		gameBoard.SetPiece(ROW, COL, pieceForPlayer(currentPlayer));
 
 		otherPlayer->OpponentDidMove(ROW, COL);
 		
