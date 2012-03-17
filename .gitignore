@@ -4,3 +4,5 @@ GLomoku/Debug/*
 *.suo
 *.ncb
 *.user
+*.sdf
+*.opensdf

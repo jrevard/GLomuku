@@ -46,7 +46,7 @@
 #include <math.h>
 #include <algorithm>
 #include "Player1.h"	// a player needs one .cpp and one .h file
-#include "Player2.h"	// to compete using this gomoku platform
+#include "PlayerDaybreak.h"
 
 
 bool oneMove = false; // toggle to view one move at a time 
@@ -504,6 +504,8 @@ void playGomoku()
 	drawGameMoves();
 	gameWon = gameOver();	// check for win
 //--
+
+	PlayerDaybreak player2;
 	
 	while ( !gameWon && boardFull < 362)
 	{
@@ -520,7 +522,7 @@ void playGomoku()
 		if ( !gameWon && boardFull < 362)
 		{
 			// get move from player 2 & update gameBoard
-			playerTwo(ROW, COL); // get move from player 1
+			player2.GetMove(ROW, COL); // get move from player 1
 			gameBoard[ROW][COL] = 'T';
 			drawGameMoves();
 			boardFull++;
