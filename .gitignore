@@ -6,3 +6,4 @@ GLomoku/Debug/*
 *.user
 *.sdf
 *.opensdf
+ipch/*
