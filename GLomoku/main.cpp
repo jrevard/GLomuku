@@ -47,39 +47,19 @@
 #include <algorithm>
 #include "Player1.h"	// a player needs one .cpp and one .h file
 #include "PlayerDaybreak.h"
-
+#include "Board.h"
 
 bool oneMove = false; // toggle to view one move at a time 
 bool gameStart = false;	// start playing gomoku
 bool gameWon = false;	// exit condition for playGomoku()
-int boardFull = 0;
 
 bool smiles = false;	// show smiley face
 bool board = true;		// show green 19x19 gameboard
 bool game = false;		// show 2D array of moves 
 
 char moveColor = 'P';	// = purple, 'T' = tan
-
-//// current board -------- 0	 1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   
-char gameBoard[19][19] = { 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 0
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 1
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 2
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 3
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 4
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 5
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 6
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 7
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 8
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 9
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 10
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 11
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 12
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 13
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 14
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 15
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 16
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', // 17
-						   'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E'};// 18
+Board gameBoard; // current game board
+PlayerDaybreak player2; // ai for player 2
 
 int smileyFace[2][8] = { -4, -2, 0, 2, 4, -2, 2, 0,
 						  2,  0, 0, 0, 2,  6, 6, 0};
@@ -96,284 +76,6 @@ void init ( GLvoid )     // Create Some Everyday Functions
     glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
     glEnable ( GL_COLOR_MATERIAL );
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-}
-
-
-//--------------------------------------------------------------
-
-// Checks for five in a row
-
-bool gameOver() // 5 in a row?
-{
-	int l, m, line, row;
-	bool victory = false;
-	char evaluate = 'X';	// alternate between 'P' and 'T'
-
-// HORIZONTAL
-
-	// check for ROWS for win
-	for (l = 0; l < 19; l++)
-	{
-		line = 0;	// reset every new row
-
-		for (m = 0; m < 19; m++)
-		{
-			if (gameBoard[l][m] == 'E') // holes reset line
-				line = 0;
-
-			if (gameBoard[l][m] == 'P')
-			{
-				if (evaluate == 'P') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'P';	 // start new line
-					line = 1;
-				}
-			}
-			else if (gameBoard[l][m] == 'T')
-			{
-				if (evaluate == 'T') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'T';	 // start new line
-					line = 1;
-				}
-			}
-
-			if (line == 5)
-			{
-				victory = true;
-				return victory;
-			}
-		}
-	}
-
-// VERTICAL
-
-	// check for COLUMNS for wins 
-	for (l = 0; l < 19; l++)
-	{
-		line = 0;	// reset every new column
-
-		for (m = 0; m < 19; m++)
-		{
-			if (gameBoard[m][l] == 'E')	 // holes reset line
-				line = 0;
-
-			if (gameBoard[m][l] == 'P')
-			{
-				if (evaluate == 'P') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'P';	 // start new line
-					line = 1;
-				}
-			}
-			else if (gameBoard[m][l] == 'T')
-			{
-				if (evaluate == 'T') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'T';	 // start new line
-					line = 1;
-				}
-			}
-
-			if (line == 5)
-			{
-				victory = true;
-				return victory;
-			}
-		}
-	}
-
-//1 DIAGONAL BL
-
-	// check half of board for diagonal wins. 
-	// board cut into 2 triangles where the 45 angle is at BL
-	for (l = 14; l >= 0; l--) // diminishing rows
-	{
-		line = 0;	row = l;
-
-		for (m = 0; m < 19 - l; m++) // 5 diagonals at row 14
-		{
-			if (gameBoard[row][m] == 'E')	 // holes reset line
-				line = 0;
-
-			if (gameBoard[row][m] == 'P')
-			{
-				if (evaluate == 'P') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'P';	 // start new line
-					line = 1;
-				}
-			}
-			else if (gameBoard[row][m] == 'T')
-			{
-				if (evaluate == 'T') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'T';	 // start new line
-					line = 1;
-				}
-			}
-
-			if (line == 5)
-			{
-				victory = true;
-				return victory;
-			}
-
-			row++;	
-		}
-	}
-
-//2 DIAGONAL TR
-
-	// check half of board for diagonal wins. 
-	// board cut into 2 triangles where the 45 angle is at TR
-	int helpfull = 14;
-	
-	for (l = 4; l < 19; l++)
-	{
-		line = 0;	helpfull--;	row = l;
-
-		for (m = 18; m > helpfull; m--) // 5 diagonals at row 14
-		{
-			if (gameBoard[row][m] == 'E')	 // holes reset line
-				line = 0;
-
-			if (gameBoard[row][m] == 'P')
-			{
-				if (evaluate == 'P') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'P';	 // start new line
-					line = 1;
-				}
-			}
-			else if (gameBoard[row][m] == 'T')
-			{
-				if (evaluate == 'T') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'T';	 // start new line
-					line = 1;
-				}
-			}
-
-			if (line == 5)
-			{
-				victory = true;
-				return victory;
-			}
-
-			row--;
-		}
-	}
-
-//3 DIAGONAL BR
-
-	// check half of board for diagonal wins. 
-	// board cut into 2 triangles where the 45 angle is at BR
-	helpfull = 14;
-	
-	for (l = 14; l >= 0; l--)
-	{
-		line = 0;	helpfull--;	row = l;
-
-		for (m = 18; m > helpfull; m--) // 5 diagonals at row 14
-		{
-			if (gameBoard[row][m] == 'E')	 // holes reset line
-				line = 0;
-
-			if (gameBoard[row][m] == 'P')
-			{
-				if (evaluate == 'P') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'P';	 // start new line
-					line = 1;
-				}
-			}
-			else if (gameBoard[row][m] == 'T')
-			{
-				if (evaluate == 'T') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'T';	 // start new line
-					line = 1;
-				}
-			}
-
-			if (line == 5)
-			{
-				victory = true;
-				return victory;
-			}
-
-			row++;	// diagonal goes down and to the left
-		}
-	}
-
-//4 DIAGONAL TL
-
-	// check half of board for diagonal wins. 
-	// board cut into 2 triangles where the 45 angle is at TL
-	helpfull = 4;
-	
-	for (l = 4; l < 19; l++)
-	{
-		line = 0;	helpfull++;		row = l;
-
-		for (m = 0; m < helpfull; m++) // 5 diagonals at row 14
-		{
-			if (gameBoard[row][m] == 'E')	 // holes reset line
-				line = 0;
-
-			if (gameBoard[row][m] == 'P')
-			{
-				if (evaluate == 'P') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'P';	 // start new line
-					line = 1;
-				}
-			}
-			else if (gameBoard[row][m] == 'T')
-			{
-				if (evaluate == 'T') // line already started
-					line++;
-				else 
-				{
-					evaluate = 'T';	 // start new line
-					line = 1;
-				}
-			}
-
-			if (line == 5)
-			{
-				victory = true;
-				return victory;
-			}
-
-			row--;
-		}
-	}
-
-	return victory;
 }
 
 //--------------------------------------------------------------
@@ -467,7 +169,7 @@ void drawGameMoves()
 	{
 		for (int e = 0; e < 19; e++)	// col
 		{
-			if (gameBoard[d][e] == 'P')
+			if (gameBoard.GetPiece(d, e) == PiecePlayer1)
 			{
 				moveColor = 'P';
 				
@@ -477,7 +179,7 @@ void drawGameMoves()
 
 				triangleFan(moveColor, newRow, newCol);
 			}
-			if (gameBoard[d][e] == 'T')
+			if (gameBoard.GetPiece(d, e) == PiecePlayer2)
 			{
 				moveColor = 'T';
 				
@@ -500,40 +202,30 @@ void playGomoku()
 	int ROW, COL;	// record player 1 moves and player 2 moves
 	ROW = COL = -5; // always positive after first game move
 
+	Winner winner;
+
 //--this bit of code is essential to view moves one at a time
 	drawGameMoves();
-	gameWon = gameOver();	// check for win
 //--
-
-	PlayerDaybreak player2;
 	
-	while ( !gameWon && boardFull < 362)
-	{
+	while (!gameWon) {
 		// get move from player 1 & update gameBoard
 		playerOne(ROW, COL); // get move from player 1
 		
-		gameBoard[ROW][COL] = 'P';
+		gameBoard.SetPiece(ROW, COL, PiecePlayer1);
 		
 		drawGameMoves();
-		boardFull++;
+		gameWon = gameBoard.IsSolved(ROW, COL, winner); // check for win
 	
-		gameWon = gameOver();	// check for win
-	
-		if ( !gameWon && boardFull < 362)
-		{
+		if (!gameWon) {
 			// get move from player 2 & update gameBoard
-			player2.GetMove(ROW, COL); // get move from player 1
-			gameBoard[ROW][COL] = 'T';
+			player2.GetMove(ROW, COL); // get move from player 2
+			gameBoard.SetPiece(ROW, COL, PiecePlayer2);
 			drawGameMoves();
-			boardFull++;
-
-			gameWon = gameOver();	// check for win
+			gameWon = gameBoard.IsSolved(ROW, COL, winner); // check for win
 		}
 
-// *** ('x') TOGGLES oneMove TO VIEW GAME MOVE BY MOVE ***
-		if (oneMove == true)
-			gameWon = true;
-
+		if (oneMove) break;
 	}
 }
 

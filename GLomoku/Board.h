@@ -24,6 +24,7 @@ class Board
 
 	Board();
 	void SetPiece(int row, int col, Piece piece);
+	Piece GetPiece(int row, int col);
 	
 	// Checks to see if there was a winner at a position
 	// Returns true if game is over

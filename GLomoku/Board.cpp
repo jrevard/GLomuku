@@ -8,8 +8,12 @@ Board::Board() {
 }
 
 void Board::SetPiece(int row, int col, Piece piece) {
+	if (pieces[row][col] == PieceNone && piece != PieceNone) pieceCount++;
 	pieces[row][col] = piece;
-	pieceCount++;
+}
+
+Piece Board::GetPiece(int row, int col) {
+	return pieces[row][col];
 }
 
 bool Board::IsSolved(int row, int col, Winner &whoWon) {
