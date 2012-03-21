@@ -30,8 +30,9 @@ class Player1 : public Player
 		char pOneBoard[BoardSize][BoardSize];
 	
 		bool isSolved(char &whoWon);
-		void TALLY_heur_vars(int &run, char &playerColor);
-		int checkEnds(int &dir, int &line, int &row, int &col);
+		void TALLY_heur_vars(int &line, int &lineValue, char &playerColor);
+		int checkEnds(char &dir, int &line, int &row, int &col);
+		int totalEnds(int &line, char &leftVal, char &rightVal);
 
 		bool playerDetected(int row, int col);
 	
