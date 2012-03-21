@@ -203,21 +203,28 @@ void drawGameMoves()
 //--------------------------------------------------------------
 
 
-void swapPlayers() {
+void swapPlayers() 
+{
 	Player *tmp = currentPlayer;
 	currentPlayer = otherPlayer;
 	otherPlayer = tmp;
 }
 
-Piece pieceForPlayer(Player *player) {
+Piece pieceForPlayer(Player *player) 
+{
 	return (player == &player1) ? PiecePlayer1 : PiecePlayer2;
 }
+
+
+//--------------------------------------------------------------
+
 
 void playGomoku()
 {
 	Winner winner;
 	
-	while (!gameWon) {
+	while (!gameWon) 
+	{
 		// get move from player 1 & update gameBoard
 		int ROW, COL;	// record player 1 moves and player 2 moves
 		currentPlayer->GetMove(ROW, COL);
@@ -234,6 +241,9 @@ void playGomoku()
 
 		if (oneMove) break;
 	}
+	if (gameWon)
+		drawGameMoves();
+
 }
 
 
@@ -294,7 +304,7 @@ void keyboard ( unsigned char key, int x, int y )  // Create Keyboard Function
 	case 115: smiles = !smiles; // lower s. toggle smiley face
         break;
 	case 120: oneMove = !oneMove; // lower x. toggle to view one
-        break;					  // move at a time per player
+	    break;					  // move at a time per player
     
 	default: break;
     }
