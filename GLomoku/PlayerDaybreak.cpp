@@ -6,11 +6,10 @@
 using namespace std;
 
 PlayerDaybreak::PlayerDaybreak() {
-	_row = 10;
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 }
 
-class RunCheck
+class CountCheck
 {
 	private:
 	static const int MinPlayerCount = 3;
@@ -18,15 +17,15 @@ class RunCheck
 	int lastEmptyRow, lastEmptyCol;
 	Board *board;
 
-	void ResetCounts() {
-		allCount = playerCount = 0;
-		lastEmptyRow = lastEmptyCol = -1;
+	public:
+	CountCheck(Board *board) {
+		this->board = board;
+		Reset();
 	}
 
-	public:
-	RunCheck(Board *board) {
-		this->board = board;
-		ResetCounts();
+	void Reset() {
+		allCount = playerCount = 0;
+		lastEmptyRow = lastEmptyCol = -1;
 	}
 
 	bool Check(int row, int col, int &oRow, int &oCol) {
@@ -39,7 +38,7 @@ class RunCheck
 				lastEmptyCol = col;
 			}
 		} else {
-			ResetCounts();
+			Reset();
 		}
 		if (allCount >= WinCount && playerCount >= MinPlayerCount) {
 			oRow = lastEmptyRow;
@@ -51,9 +50,11 @@ class RunCheck
 };
 
 bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
+	CountCheck check(&board);
+
 	// Check horizontal
 	for (int row=0; row < BoardSize; row++) {
-		RunCheck check(&board);
+		check.Reset();
 		for (int col=0; col < BoardSize; col++) {
 			if (check.Check(row, col, oRow, oCol)) return true;
 		}
@@ -61,7 +62,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 
 	// Check vertical
 	for (int col=0; col < BoardSize; col++) {
-		RunCheck check(&board);
+		check.Reset();
 		for (int row=0; row < BoardSize; row++) {
 			if (check.Check(row, col, oRow, oCol)) return true;
 		}
@@ -69,7 +70,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 
 	// Check Diagonal \ -- Start at the top left
 	for (int pRow = 0; pRow < BoardSize; pRow++) {
-		RunCheck check(&board);
+		check.Reset();
 		int row = pRow;
 		int col = 0;
 		while (row < BoardSize && col < BoardSize) {
@@ -79,7 +80,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 		}
 	}
 	for (int pCol = 0; pCol < BoardSize; pCol++) {
-		RunCheck check(&board);
+		check.Reset();
 		int row = 0;
 		int col = pCol;
 		while (row < BoardSize && col < BoardSize) {
@@ -91,7 +92,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 
 	// Check Diagonal / -- Start at the top right
 	for (int pRow = 0; pRow < BoardSize; pRow++) {
-		RunCheck check(&board);
+		check.Reset();
 		int row = pRow;
 		int col = BoardSize-1;
 		while (row < BoardSize && col >= 0) {
@@ -101,7 +102,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 		}
 	}
 	for (int pCol = BoardSize-1; pCol >= 0; pCol--) {
-		RunCheck check(&board);
+		check.Reset();
 		int row = 0;
 		int col = pCol;
 		while (row < BoardSize && col >= 0) {
@@ -117,7 +118,7 @@ bool PlayerDaybreak::IsPlayerRow3(int &oRow, int &oCol) {
 void PlayerDaybreak::GetRandom(int &row, int &col) {
 	do {
 		row = rand() % BoardSize;
-		col = rand() & BoardSize;
+		col = rand() % BoardSize;
 	} while (board.GetPiece(row, col) != PieceNone);
 }
 

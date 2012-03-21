@@ -1,5 +1,6 @@
 #include "Board.h"
 #include <algorithm>
+#include <assert.h>
 
 using namespace std;
 
@@ -10,16 +11,24 @@ Board::Board() {
 			pieces[row][col] = PieceNone;
 }
 
+void BoundsCheck(int row, int col) {
+	assert(row >= 0 && row < BoardSize);
+	assert(col >= 0 && col < BoardSize);
+}
+
 void Board::SetPiece(int row, int col, Piece piece) {
+	BoundsCheck(row, col);
 	if (pieces[row][col] == PieceNone && piece != PieceNone) pieceCount++;
 	pieces[row][col] = piece;
 }
 
 Piece Board::GetPiece(int row, int col) {
+	BoundsCheck(row, col);
 	return pieces[row][col];
 }
 
 bool Board::IsSolved(int row, int col, Winner &whoWon) {
+	BoundsCheck(row, col);
 	whoWon = WinnerNone;
 	if (IsSolved(row, col, PiecePlayer1)) {
 		whoWon = WinnerPlayer1;
