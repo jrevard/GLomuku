@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="GLomoku">
+</Property><Property Name="Solution File" Value="C:\1\College\SSU\CS 480 AI\Gomoku\GLomoku\GLomoku.sln">
+</Property><Property Name="User Options File" Value="C:\1\College\SSU\CS 480 AI\Gomoku\GLomoku\GLomoku.suo">
+</Property><Property Name="Date" Value="Friday, March 16, 2012">
+</Property><Property Name="Time" Value="17:49 PM">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="GLomoku.sln" Description="File successfully backed up as C:\1\College\SSU\CS 480 AI\Gomoku\GLomoku\GLomoku.sln.old">
+</Event><Event ErrorLevel="0" Project="" Source="GLomoku.suo" Description="File successfully backed up as C:\1\College\SSU\CS 480 AI\Gomoku\GLomoku\GLomoku.suo.old">
+</Event><Event ErrorLevel="0" Project="GLomoku" Source="GLomoku\GLomoku.vcproj" Description="Converting project file 'C:\1\College\SSU\CS 480 AI\Gomoku\GLomoku\GLomoku\GLomoku.vcproj'.">
+</Event><Event ErrorLevel="1" Project="GLomoku" Source="GLomoku\GLomoku.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="0" Project="GLomoku" Source="GLomoku\GLomoku.vcproj" Description="Done converting to new project file 'C:\1\College\SSU\CS 480 AI\Gomoku\GLomoku\GLomoku\GLomoku.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="GLomoku" Source="GLomoku\GLomoku.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="GLomoku.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="GLomoku.sln" Description="Converted">
+</Event></UpgradeLog>
