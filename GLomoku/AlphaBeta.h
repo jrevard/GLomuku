@@ -12,8 +12,8 @@ class SearchNode
 	public:
 	virtual bool IsTerminal() = 0;
 	virtual float ValueHeuristic() = 0;
-	virtual vector<SearchNode> Children() = 0;
-}
+	virtual vector<SearchNode*> Children() = 0;
+};
 
 class AlphaBeta
 {
