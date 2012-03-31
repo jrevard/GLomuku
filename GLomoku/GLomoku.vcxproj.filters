@@ -16,6 +16,9 @@
     <ClCompile Include="AlphaBeta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ares.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h">
@@ -31,6 +34,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AlphaBeta.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ares.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

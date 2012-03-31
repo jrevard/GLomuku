@@ -46,13 +46,14 @@
 #include <math.h>
 #include <algorithm>
 #include <assert.h>
+#include "Ares.h"
 #include "Player1.h"	// a player needs one .cpp and one .h file
 #include "PlayerDaybreak.h"
 #include "Board.h"
 
 using namespace std;
 
-bool oneMove = false; // toggle to view one move at a time 
+bool oneMove = true; // toggle to view one move at a time 
 bool gameStart = false;	// start playing gomoku
 bool gameWon = false;	// exit condition for playGomoku()
 
@@ -62,8 +63,20 @@ bool game = false;		// show 2D array of moves
 
 char moveColor = 'P';	// = purple, 'T' = tan
 Board gameBoard; // current game board
-Player1 player1; // ai for player 1
-PlayerDaybreak player2; // ai for player 2
+
+// ai classes - Player1, PlayerDaybreak, Ares (Player1 renamed)
+
+// --- moves first------
+Ares player1;				// best attack + best block
+//Player1 player1;			// good attack + very little block
+//PlayerDaybreak player1;	// no attack   + limited block
+
+// --- moves second ----
+Ares player2;				// best attack + best block
+//Player1 player2;			// good attack + very little block
+//PlayerDaybreak player2;	// no attack   + limited block
+
+
 Player *currentPlayer = &player1; // Who's current turn
 Player *otherPlayer = &player2;
 
@@ -335,8 +348,8 @@ void arrow_keys ( int a_keys, int x, int y )  // Create Special Function (requir
 
 int main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
 {
-	HWND hWnd = GetConsoleWindow();		//hide terminal window
-	ShowWindow( hWnd, SW_HIDE );
+	//HWND hWnd = GetConsoleWindow();		//hide terminal window
+	//ShowWindow( hWnd, SW_HIDE );
 
     glutInit            ( &argc, argv ); // Erm Just Write It =)
     init ();
