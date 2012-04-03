@@ -29,8 +29,7 @@ using namespace std;
 
 Ares::Ares() 
 {
-	test1 = 10;		boardSize = 0;
-	pOneMoves = 0;	boardsExamined = 0;
+	test1 = 10;	boardSize = 0; pOneMoves = 0; boardsExamined = 0;
 
 	// initialize player 1 19x19 board with all 'E' for empty 
 	for (int row=0; row < BoardSize; row++)
@@ -40,6 +39,7 @@ Ares::Ares()
 
 
 //--------------------------------------------------------------
+
 
 void Ares::OpponentDidMove(int row, int col) 
 {
@@ -107,7 +107,17 @@ void Ares::totalEnds(int &line, char &moveColor, char &back,
 	else if (back == 'O' && front == 'O')
 	{
 		if (line == 2 && moveColor == 'P') two_P_OO++;
-		if (line == 2 && moveColor == 'T') two_T_OO++;
+
+		// candidate for blocking
+		if (line == 2 && moveColor == 'T') 
+		{
+			block_2_OO.block_r = row;
+			block_2_OO.block_c = col;
+			block_2_OO.direction = dir;
+			
+			two_T_OO++;
+		}
+
 		if (line == 3 && moveColor == 'P') three_P_OO++;
 		
 		// candidate for blocking
@@ -603,21 +613,29 @@ bool Ares::isSolved(char &whoWon) // 5 in a row?
 	}
 
 	// reasons to block 
-	if (three_T_OO > three_P_OO) // opponent has an open
-	{							 // run of 3 and I don't
-		block = true;
-		block_line_size = 3;
-	}
-	
+
+	// opponent has an open run of 3 and I don't
+	//if (three_T_OO > three_P_OO)	{							 
+	//	block = true;
+	//	block_line_size = 3;		}
+	/*
 	// opponent will win with his next move if I don't block 
 	if (four_T_BO > four_T_OO || four_T_BO > four_T_BO) 
 	{							 
 		block = true;
 		block_line_size = 4;
 	}
-
+	else if (three_T_OO > three_P_OO)	
+	{							 
+		block = true;
+		block_line_size = 3;		
+	}
+	//else if (two_T_OO > two_P_OO){block = true;block_line_size = 2;	}
+*/
 	return victory; // false, but heur vals come back
 }
+
+// zab
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -721,7 +739,7 @@ int Ares::alphaBeta (int depth, int alpha, int beta, bool MAXplayer)
 	
 	go = isSolved(winner); // get heur info 
 
-    if (depth == 1 || go ) // or node is a terminal node
+    if (depth == 2 || go ) // or node is a terminal node
 	{
 		heuristic = getHeuristic(depth, winner);
         return heuristic;// value of the terminal game tree node
@@ -737,15 +755,10 @@ int Ares::alphaBeta (int depth, int alpha, int beta, bool MAXplayer)
 					pOneBoard[p][q] = 'P';	// make move on board
 					temp = alphaBeta(depth+1, alpha, beta, !(MAXplayer)); 
 					pOneBoard[p][q] = 'E';	//unmake move on board
-
 					boardsExamined++; // total recursive calls
 
-// -- maxmax start-
-					//if (temp > alpha) alpha = temp; //a = max()
-// -- maxmax end---
-
-// - ab code start- α := max(>) or min(<) 
-					if (temp < alpha) alpha = temp; 
+// - ab code start- α := min(<) or max(>) 
+					if (temp > alpha) alpha = temp; 
 					if (beta <= alpha) break; 			
 // -- ab cod end ---	
 				
@@ -763,15 +776,10 @@ int Ares::alphaBeta (int depth, int alpha, int beta, bool MAXplayer)
 					pOneBoard[p][q] = 'T'; // make move on board
 					temp = alphaBeta(depth+1, alpha, beta, !(MAXplayer)); 
 					pOneBoard[p][q] = 'E'; //unmake move on board
-
 					boardsExamined++; // total recursive calls
 
-// -- maxmax start-
-					//if (temp > beta) beta = temp; // β := max()
-// -- maxmax end---
-
-// - ab code start- β := min(<) or max(>) 
-					if (temp > beta) beta = temp; 
+// - ab code start- β := max(>) or min(<)  
+					if (temp < beta) beta = temp; 
 					if (beta <= alpha) break; 	
 // -- ab cod end --- 	
 
@@ -780,6 +788,8 @@ int Ares::alphaBeta (int depth, int alpha, int beta, bool MAXplayer)
 		return beta; // β 
 	}
 }
+
+// zaz
 
 //--------------------------------------------------------------
 
@@ -794,16 +804,16 @@ void Ares::Block(int &row, int &col)
 	int backHeur = 0, frontHeur = 0;
 	char c = 'N';	bool m;
 
-	if (block_line_size == 3) // BLOCK XPPPX  
+	if (block_line_size == 2) // BLOCK XPPPX  
 	{
-		if (block_3_OO.direction == 'H')
+		if (block_2_OO.direction == 'H')
 		{
 			// find both ends to block
-			rback = block_3_OO.block_r;
-			cback = block_3_OO.block_c - 3;
-			rfront = block_3_OO.block_r;
-			cfront = block_3_OO.block_c + 1;
-//---------
+			rback = block_2_OO.block_r;
+			cback = block_2_OO.block_c - 2;
+			rfront = block_2_OO.block_r;
+			cfront = block_2_OO.block_c + 1;
+
 			// make moves for both to see which is better 
 			pOneBoard[rback][cback] = 'P';
 			m = isSolved(c);	 
@@ -819,8 +829,153 @@ void Ares::Block(int &row, int &col)
 				row = rback;	col = cback;	}
 			else								{
 				row = rfront;	col = cfront;	}
-//---------
+		}
+		else if (block_2_OO.direction == 'V')
+		{
+			// find both ends to block
+			rback = block_2_OO.block_r - 2;
+			cback = block_2_OO.block_c;
+			rfront = block_2_OO.block_r + 1;
+			cfront = block_2_OO.block_c;
 
+			// make moves for both to see which is better 
+			pOneBoard[rback][cback] = 'P';
+			m = isSolved(c);	 
+			backHeur = getHeuristic(1, m);
+			pOneBoard[rback][cback] = 'E';
+
+			pOneBoard[rfront][cfront] = 'P';
+			m = isSolved(c);	 
+			frontHeur = getHeuristic(1, m);
+			pOneBoard[rfront][cfront] = 'E';
+
+			if (backHeur > frontHeur)			{
+				row = rback;	col = cback;	}
+			else								{
+				row = rfront;	col = cfront;	}
+		}
+		else if (block_2_OO.direction == '1') // right and down
+		{
+			// find both ends to block
+			rback = block_2_OO.block_r - 2;
+			cback = block_2_OO.block_c - 2;
+			rfront = block_2_OO.block_r + 1;
+			cfront = block_2_OO.block_c + 1;
+
+			// make moves for both to see which is better 
+			pOneBoard[rback][cback] = 'P';
+			m = isSolved(c);	 
+			backHeur = getHeuristic(1, m);
+			pOneBoard[rback][cback] = 'E';
+
+			pOneBoard[rfront][cfront] = 'P';
+			m = isSolved(c);	 
+			frontHeur = getHeuristic(1, m);
+			pOneBoard[rfront][cfront] = 'E';
+
+			if (backHeur > frontHeur)			{
+				row = rback;	col = cback;	}
+			else								{
+				row = rfront;	col = cfront;	}
+		}
+		else if (block_2_OO.direction == '2') // left and up
+		{
+			// find both ends to block
+			rback = block_2_OO.block_r + 2;
+			cback = block_2_OO.block_c + 2;
+			rfront = block_2_OO.block_r - 1;
+			cfront = block_2_OO.block_c - 1;
+
+			// make moves for both to see which is better 
+			pOneBoard[rback][cback] = 'P';
+			m = isSolved(c);	 
+			backHeur = getHeuristic(1, m);
+			pOneBoard[rback][cback] = 'E';
+
+			pOneBoard[rfront][cfront] = 'P';
+			m = isSolved(c);	 
+			frontHeur = getHeuristic(1, m);
+			pOneBoard[rfront][cfront] = 'E';
+
+			if (backHeur > frontHeur)			{
+				row = rback;	col = cback;	}
+			else								{
+				row = rfront;	col = cfront;	}
+		}
+		else if (block_2_OO.direction == '3') // left and down
+		{
+			// find both ends to block
+			rback = block_2_OO.block_r - 2;
+			cback = block_2_OO.block_c + 2;
+			rfront = block_2_OO.block_r + 1;
+			cfront = block_2_OO.block_c - 1;
+
+			// make moves for both to see which is better 
+			pOneBoard[rback][cback] = 'P';
+			m = isSolved(c);	 
+			backHeur = getHeuristic(1, m);
+			pOneBoard[rback][cback] = 'E';
+
+			pOneBoard[rfront][cfront] = 'P';
+			m = isSolved(c);	 
+			frontHeur = getHeuristic(1, m);
+			pOneBoard[rfront][cfront] = 'E';
+
+			if (backHeur > frontHeur)			{
+				row = rback;	col = cback;	}
+			else								{
+				row = rfront;	col = cfront;	}
+		}
+		else if (block_2_OO.direction == '4') // right and up
+		{
+			// find both ends to block
+			rback = block_2_OO.block_r - 2;
+			cback = block_2_OO.block_c + 2;
+			rfront = block_2_OO.block_r - 1;
+			cfront = block_2_OO.block_c + 1;
+
+			// make moves for both to see which is better 
+			pOneBoard[rback][cback] = 'P';
+			m = isSolved(c);	 
+			backHeur = getHeuristic(1, m);
+			pOneBoard[rback][cback] = 'E';
+
+			pOneBoard[rfront][cfront] = 'P';
+			m = isSolved(c);	 
+			frontHeur = getHeuristic(1, m);
+			pOneBoard[rfront][cfront] = 'E';
+
+			if (backHeur > frontHeur)			{
+				row = rback;	col = cback;	}
+			else								{
+				row = rfront;	col = cfront;	}	
+		}
+	}
+	else if (block_line_size == 3) // BLOCK XPPPX  
+	{
+		if (block_3_OO.direction == 'H')
+		{
+			// find both ends to block
+			rback = block_3_OO.block_r;
+			cback = block_3_OO.block_c - 3;
+			rfront = block_3_OO.block_r;
+			cfront = block_3_OO.block_c + 1;
+
+			// make moves for both to see which is better 
+			pOneBoard[rback][cback] = 'P';
+			m = isSolved(c);	 
+			backHeur = getHeuristic(1, m);
+			pOneBoard[rback][cback] = 'E';
+
+			pOneBoard[rfront][cfront] = 'P';
+			m = isSolved(c);	 
+			frontHeur = getHeuristic(1, m);
+			pOneBoard[rfront][cfront] = 'E';
+
+			if (backHeur > frontHeur)			{
+				row = rback;	col = cback;	}
+			else								{
+				row = rfront;	col = cfront;	}
 		}
 		else if (block_3_OO.direction == 'V')
 		{
@@ -830,7 +985,6 @@ void Ares::Block(int &row, int &col)
 			rfront = block_3_OO.block_r + 1;
 			cfront = block_3_OO.block_c;
 
-//---------
 			// make moves for both to see which is better 
 			pOneBoard[rback][cback] = 'P';
 			m = isSolved(c);	 
@@ -846,8 +1000,6 @@ void Ares::Block(int &row, int &col)
 				row = rback;	col = cback;	}
 			else								{
 				row = rfront;	col = cfront;	}
-//---------
-
 		}
 		else if (block_3_OO.direction == '1') // right and down
 		{
@@ -857,7 +1009,6 @@ void Ares::Block(int &row, int &col)
 			rfront = block_3_OO.block_r + 1;
 			cfront = block_3_OO.block_c + 1;
 
-//---------
 			// make moves for both to see which is better 
 			pOneBoard[rback][cback] = 'P';
 			m = isSolved(c);	 
@@ -873,8 +1024,6 @@ void Ares::Block(int &row, int &col)
 				row = rback;	col = cback;	}
 			else								{
 				row = rfront;	col = cfront;	}
-//---------
-
 		}
 		else if (block_3_OO.direction == '2') // left and up
 		{
@@ -884,7 +1033,6 @@ void Ares::Block(int &row, int &col)
 			rfront = block_3_OO.block_r - 1;
 			cfront = block_3_OO.block_c - 1;
 
-//---------
 			// make moves for both to see which is better 
 			pOneBoard[rback][cback] = 'P';
 			m = isSolved(c);	 
@@ -900,8 +1048,6 @@ void Ares::Block(int &row, int &col)
 				row = rback;	col = cback;	}
 			else								{
 				row = rfront;	col = cfront;	}
-//---------
-
 		}
 		else if (block_3_OO.direction == '3') // left and down
 		{
@@ -911,7 +1057,6 @@ void Ares::Block(int &row, int &col)
 			rfront = block_3_OO.block_r + 1;
 			cfront = block_3_OO.block_c - 1;
 
-//---------
 			// make moves for both to see which is better 
 			pOneBoard[rback][cback] = 'P';
 			m = isSolved(c);	 
@@ -927,7 +1072,6 @@ void Ares::Block(int &row, int &col)
 				row = rback;	col = cback;	}
 			else								{
 				row = rfront;	col = cfront;	}
-//---------
 
 		}
 		else if (block_3_OO.direction == '4') // right and up
@@ -938,7 +1082,6 @@ void Ares::Block(int &row, int &col)
 			rfront = block_3_OO.block_r - 1;
 			cfront = block_3_OO.block_c + 1;
 
-//---------
 			// make moves for both to see which is better 
 			pOneBoard[rback][cback] = 'P';
 			m = isSolved(c);	 
@@ -953,9 +1096,7 @@ void Ares::Block(int &row, int &col)
 			if (backHeur > frontHeur)			{
 				row = rback;	col = cback;	}
 			else								{
-				row = rfront;	col = cfront;	}
-//---------
-			
+				row = rfront;	col = cfront;	}			
 		}
 	}
 	else if (block_line_size == 4) // BLOCK TPPPPX or XPPPPT 
@@ -1066,15 +1207,13 @@ void Ares::GetMove(int &roW, int &coL)
 {	
 	int terminal;	// alphabeta return value. terminal node
 	int depth;		// determines search height in tree
-	int alpha = 500000;	int beta = -500000;
-	bool maxPlayer = true;	bool na; char non = 'N'; // throwaway
+	int alpha = -500000;			int beta = 500000;
+	bool maxPlayer = true;		bool na; char non = 'N'; //throwaway
 	int possibeMoves[365][3];	int moveCount = 0;
 
 	recordMov bestMove;
 	bestMove.row = bestMove.col = bestMove.heur = -1;
 	boardsExamined = 0;	// reset total between moves
-
-	//na = isSolved(non);	// set block to true or false
 
 	if (pOneMoves == 0) // first move
 	{
@@ -1090,10 +1229,9 @@ void Ares::GetMove(int &roW, int &coL)
 						roW = zz;	coL = zzz - 1;	}
 					isPlayerOne = false;			}}}
 
-		if (isPlayerOne)
+   		if (isPlayerOne)
 			roW = coL = 9;	// center of board
 	}
-	//else if (block == true)	Block(roW, coL); // BLOCK
 	else // for every 'E' on board
 	{
 		for (int e = 0; e < 19; e++)		{
@@ -1103,16 +1241,15 @@ void Ares::GetMove(int &roW, int &coL)
 
 				if (pOneBoard[e][f] == 'E' && detected)
 				{
-					depth = 0;
+					if ( e == 9 && f == 4)
+       					cout << "\n\n hey \n\n";
+
+  					depth = 0;
 					pOneBoard[e][f] = 'P';
-					terminal = alphaBeta(depth+1, alpha, beta, (maxPlayer)); 				
+					terminal = alphaBeta(depth+1, alpha, beta, !(maxPlayer)); 				
 					pOneBoard[e][f] = 'E';
 
 					boardsExamined++; // total recursive calls
-
-					// print all terminal node values
-					//cout << "\n" << terminal << " " << e 
-					//	 << " " << f;
 
 					// search for best move
 					if (terminal > bestMove.heur || bestMove.col == -1)
@@ -1127,33 +1264,22 @@ void Ares::GetMove(int &roW, int &coL)
 					possibeMoves[moveCount][1] = e;
 					possibeMoves[moveCount][2] = f;
 					moveCount++;
-				
-				}	// end if
-			}	// end for
-		}	// end for
+				}}}	
 
 //----- BLOCK or ATTACK	
 		na = isSolved(non);	// set block to true or false
 		
 		if (block == true && bestMove.heur < 400000) // BLOCK
-		{
 			Block(roW, coL); 
-		}
-		else // ATTACK
-		{			
-			roW = bestMove.row;		
-			coL = bestMove.col;
-		}	
-//------	
-
-		//roW = bestMove.row;		coL = bestMove.col;
-
+		else { // ATTACK						
+			roW = bestMove.row; coL = bestMove.col;
+		}		
 	} // end else
 	
 	pOneBoard[roW][coL] = 'P'; // record your move
 	boardSize++;	pOneMoves++;
 
-	cout << "\nChose: " << bestMove.heur << " " 
+	cout << "\n" << pOneMoves << " Chose: " << bestMove.heur << " " 
 		<< roW << " " << coL;
 }
 

@@ -25,6 +25,7 @@ class Ares : public Player
 	private:
 
 		bool block;
+		recordMov block_2_OO;	// block coord's for run lengh 2
 		recordMov block_3_OO;	// block coord's for run lengh 3
 		recordMov block_4_BO;	// block coord's for run lengh 4
 	
